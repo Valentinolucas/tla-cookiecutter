@@ -6,22 +6,33 @@ on:
       - main  # Adjust this to your main branch
 
 jobs:
-  code-quality-and-static-analysis:
-    name: Code Quality and Static Analysis
+  linting:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup Python
-        uses: actions/setup-python@v1
-      - name: Checkout PyTorch
-        uses: actions/checkout@master
-      - name: Install flake8
-        run: pip install flake8
-      - name: Run flake8
-        uses: suo/flake8-github-action@releases/v1
+      - name: Black
+        uses: microsoft/action-python@0.7.0
         with:
-          checkName: 'code-quality-and-static-analysis'   # NOTE: this needs to be the same as the job name
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          black: true
+
+      - name: Bandit
+        uses: microsoft/action-python@0.7.0
+        with:          
+          bandit: true
+
+      - name: Pylint
+        uses: microsoft/action-python@0.7.0
+        with:
+          pylint: true
+          
+      - name: Pyright
+        uses: microsoft/action-python@0.7.0
+        with:          
+          pyright: true
+          
+      - name: Flake8
+        uses: microsoft/action-python@0.7.0
+        with:          
+          flake8: true
 
   unit-test:
     name: Unit Test

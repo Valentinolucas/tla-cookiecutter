@@ -41,9 +41,8 @@ jobs:
   build-and-push:
     uses: Valentinolucas/tla-scaffold/.github/workflows/build-and-push-container.yml@main
     secrets:
-      REGISTRY_SERVER: ${{ secrets.DOCKER_SERVER }}
-      REGISTRY_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
     
   deploy-to-development:

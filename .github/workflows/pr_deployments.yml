@@ -6,7 +6,7 @@ on:
       - main  # Adjust this to your main branch
 
 jobs:
-  flake8-lint:
+  linting:
     runs-on: ubuntu-latest
     name: Lint
     steps:

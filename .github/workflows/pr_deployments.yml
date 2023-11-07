@@ -6,14 +6,25 @@ on:
       - main  # Adjust this to your main branch
 
 jobs:
-  linting:
+  flake8-lint:
     runs-on: ubuntu-latest
+    name: Lint
     steps:
-      - name: Flake8
-        uses: microsoft/action-python@0.7.0
-        with:          
-          flake8: true
-          workdir: ./tla_example
+      - name: Check out source repository
+        uses: actions/checkout@v2
+      - name: Set up Python environment
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+      # Install specific flake8 version (this step is not required. Default is "latest").
+      - run: pip install flake8==6.0.0
+      # Install flake8 extensions (this step is not required. Default is "None").
+      - run: pip install flake8-docstrings flake8-simplify flake8-unused-arguments flake8-quotes
+      - name: flake8 Lint
+        uses: reviewdog/action-flake8@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workdir: /tla_example/src
 
   unit-test:
     name: Unit Test

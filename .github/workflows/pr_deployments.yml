@@ -38,7 +38,7 @@ jobs:
     name: Unit Test
     runs-on: ubuntu-latest
     needs:
-      - code-quality-and-static-analysis
+      - linting
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -49,7 +49,7 @@ jobs:
     name: Build and Push Docker image
     runs-on: ubuntu-latest
     needs:
-      - code-quality-and-static-analysis
+      - linting
       - Unit-test
     steps:
       - name: Check out the repo
@@ -80,7 +80,7 @@ jobs:
     name: Deploy / Development
     runs-on: ubuntu-latest
     needs:
-      - code-quality-and-static-analysis
+      - linting
       - push_to_registry
     steps:
       - name: Check out the repo

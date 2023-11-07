@@ -13,6 +13,7 @@ jobs:
         uses: microsoft/action-python@0.7.0
         with:          
           flake8: true
+          workdir: tla_example
 
   unit-test:
     name: Unit Test

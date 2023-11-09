@@ -1,1 +1,3 @@
 tla-example/env/*
+terraform/.terraform/*
+terraform/*.tfstate*

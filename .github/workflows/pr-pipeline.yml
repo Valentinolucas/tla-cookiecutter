@@ -1,4 +1,4 @@
-name: Branch Deployments
+name: ${GITHUB_REF##*/} PR pipeline
 
 on:
   pull_request:
@@ -7,8 +7,8 @@ on:
 
 jobs:
   linting:
-    runs-on: ubuntu-latest
     name: Lint
+    runs-on: ubuntu-latest
     steps:
       - name: Check out source repository
         uses: actions/checkout@v2
@@ -39,6 +39,7 @@ jobs:
         run: echo "Running unit tests..."
 
   build-and-push:
+    name: Build and Push
     needs:
       - unit-test
       - linting
@@ -47,8 +48,8 @@ jobs:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-  deploy-to-development:
-    name: Deploy / Development
+  dev-deploy:
+    name: Dev Deploy
     needs:
       - build-and-push
     if: success()
@@ -56,9 +57,12 @@ jobs:
     with:
       environment: development
       tf_working_dir: terraform/
-      tf_args: >
-        -var="env=dev"
+      tf_init_options: >
+        -backend-config="bucket=terraform-state-bucket"
+        -backend-config="key=dev.tfstate"
+        -backend-config="region=eu-east-2"
+      tf_plan_options: >
+        -var-file="envs/dev.tfvars"
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-

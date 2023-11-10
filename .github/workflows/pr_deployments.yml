@@ -53,6 +53,10 @@ jobs:
       - build-and-push
     if: success()
     uses: Valentinolucas/tla-scaffold/.github/workflows/terraform-deploy.yml@main
+    with:
+      environment: development
+      tf_working_dir: terraform/
+      tf_vars_path: terraform/development.tfvars
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

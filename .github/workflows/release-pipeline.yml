@@ -57,42 +57,22 @@ jobs:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-  deploy-to-development:
-    name: Deploy / Development
+  deploy:
+    strategy:
+      matrix:
+        target: [dev, stage, prod]
     needs:
       - build-and-push
-    if: success()
     uses: Valentinolucas/tla-scaffold/.github/workflows/terraform-deploy.yml@main
+    with:
+      environment: development
+      tf_working_dir: terraform/
+      tf_init_options: >
+        -backend-config="bucket=terraform-state-bucket"
+        -backend-config="key=${{ matrix.target }}.tfstate"
+        -backend-config="region=eu-east-2"
+      tf_plan_options: >
+        -var-file="envs/${{ matrix.target }}.tfvars"
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-  deploy-to-staging:
-    name: Deploy / Staging
-    runs-on: ubuntu-latest
-    environment: staging
-    needs:
-      - build-and-push
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v4
-      - name: Deploy to staging
-        run: echo "Deploying to staging environment..."
-      - name: Functional and Regression Testing
-        run: echo "Running integration tests..."
-
-  deploy-to-production:
-    name: Deploy / Production
-    runs-on: ubuntu-latest
-    environment: production
-    needs:
-      - deploy-to-staging
-    if: success()
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v4
-      - name: Deploy to production
-        run: echo "Deploying to production environment..."
-      - name: Smoke Testing
-        run: echo "Running smoke tests..."
-

@@ -48,21 +48,22 @@ jobs:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-  dev-deploy:
-    name: Dev Deploy
+  deploy:
+    strategy:
+      matrix:
+        target: [dev, stage, prod]
     needs:
       - build-and-push
-    if: success()
     uses: Valentinolucas/tla-scaffold/.github/workflows/terraform-deploy.yml@main
     with:
       environment: development
       tf_working_dir: terraform/
       tf_init_options: >
         -backend-config="bucket=terraform-state-bucket"
-        -backend-config="key=dev.tfstate"
+        -backend-config="key=${{ matrix.target }}.tfstate"
         -backend-config="region=eu-east-2"
       tf_plan_options: >
-        -var-file="envs/dev.tfvars"
+        -var-file="envs/${{ matrix.target }}.tfvars"
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

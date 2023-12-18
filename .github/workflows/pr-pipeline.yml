@@ -46,10 +46,6 @@ jobs:
         run:  aws --version
       - name: Check python version
         run:  python3 --version
-      - name: Check pip version
-        run:  pip --version
-      - name: check docker version
-        run:  docker --version
       - name: List aws s3
         run:  aws s3 ls
 

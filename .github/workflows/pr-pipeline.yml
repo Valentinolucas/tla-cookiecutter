@@ -45,7 +45,7 @@ jobs:
       - name: Check aws cli version
         run:  aws --version
       - name: Check python version
-        run:  python --version
+        run:  python3 --version
       - name: Check pip version
         run:  pip --version
       - name: check docker version

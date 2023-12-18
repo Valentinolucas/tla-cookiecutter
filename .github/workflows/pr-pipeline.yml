@@ -1,0 +1,70 @@
+name: Branch Deployments
+
+on:
+  pull_request:
+    branches:
+      - main  # Adjust this to your main branch
+
+jobs:
+  # linting:
+  #   runs-on: ubuntu-latest
+  #   name: Lint
+  #   steps:
+  #     - name: Check out source repository
+  #       uses: actions/checkout@v2
+  #     # Install specific flake8 version (this step is not required. Default is "latest").
+  #     - run: pip install flake8==6.0.0
+  #     # Install flake8 extensions (this step is not required. Default is "None").
+  #     - run: pip install flake8-docstrings flake8-simplify flake8-unused-arguments flake8-quotes
+  #     - name: flake8 Lint
+  #       uses: reviewdog/action-flake8@v3
+  #       with:
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #         workdir: /tla_example/src
+  #         reporter: github-pr-review
+
+  unit-test:
+    name: Unit Test
+    runs-on: ubuntu-latest
+    container:
+      credentials:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+      image: valentinofantini/scaffolding:94b9e27
+      env:
+        AWS_ACCESS_KEY_ID : ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY : ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      ports:
+        - 80
+      volumes:
+        - .:/tla_example
+      options: --cpus 1
+    steps:
+      - name: Check terraform version
+        run:  terraform --version
+      - name: Check aws cli version
+        run:  aws --version
+      - name: Check python version
+        run:  python3 --version
+      - name: List aws s3
+        run:  aws s3 ls
+
+  # build-and-push:
+  #   needs:
+  #     - unit-test
+  #     - linting
+  #   uses: Valentinolucas/tla-scaffold/.github/workflows/build-and-push-container.yml@main
+  #   secrets:
+  #     DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  #     DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+  # deploy-to-development:
+  #   name: Deploy / Development
+  #   needs:
+  #     - build-and-push
+  #   if: success()
+  #   uses: Valentinolucas/tla-scaffold/.github/workflows/terraform-deploy.yml@main
+  #   secrets:
+  #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
